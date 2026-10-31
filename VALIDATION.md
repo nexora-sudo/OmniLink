@@ -1,19 +1,15 @@
-# Validação dos builds — conferência em 31/10/2026
+# Validation — OmniLink 0.1.1 (build 3)
 
-- Flutter 3.47.9 stable / Dart 3.13.7 em Windows 11 x64.
-- Visual Studio Build Tools 2022, MSVC, ATL e Windows SDK instalados.
-- Modo de Desenvolvedor habilitado com autorização do usuário.
-- Android SDK (plataformas 33/35/36), build-tools 36.0.0, NDK 28.2.13676358, CMake 3.22.1 e Java Temurin instalados.
-- `flutter analyze --no-pub`: sem problemas.
-- `flutter test --no-pub --reporter expanded`: 23 testes aprovados, incluindo cópia para Downloads sem sobrescrita e identificação de mídia.
-- `flutter build windows --release --no-pub`: concluído; EXE e DLLs presentes.
-- `flutter build apk --debug --no-pub`: concluído; APK de 188612474 bytes presente.
-- `apksigner verify --verbose`: aprovado, assinatura v2, um signatário.
-- `aapt dump badging`: org.omnilink.omnilink 0.1.0 (2), minSdk 24, targetSdk 36, atividade MainActivity, ABIs arm64-v8a/armeabi-v7a/x86_64.
+Verified on October 31, 2026.
 
-Correção reproduzível: desktop_drop 0.6.1 incluído em packages/desktop_drop, com registro Android removido por incompatibilidade do módulo legado com AGP 9. O recurso de arrastar é habilitado apenas no Windows; o Android usa o seletor do sistema. Código Dart e Windows original do plugin preservado, junto com a licença.
+- Flutter 3.47.9 / Dart 3.13.7, Windows x64.
+- Static analysis: no issues found.
+- Automated tests: 27 passed, including language selection, SQLite preference persistence, stored status display, diagnostic translation, and existing TLS/transfer tests.
+- Android debug build: completed. APK signature verification passed (v2). Package org.omnilink.omnilink, versionName 0.1.1, versionCode 3, minSdk 24, targetSdk 36.
+- Windows release x64 build: completed with EXE, DLLs, and assets.
+- Windows GUI: opened version 0.1.1, observed English navigation and settings, selected Português (Brasil), and verified the interface changed immediately to Portuguese.
+- Preference persistence across database reopen is covered by automated tests. Android language selection still needs physical-device UI testing.
+- Physical-device pairing/transfers, Android gallery/SAF/camera, cross-device mDNS, startup integration, throughput, memory and FPS still require integrated validation.
+- Native OS dialogs and third-party/system error details may follow the system language.
 
-Logs: validation/analyze.txt, validation/tests.txt, validation/build-windows.txt, validation/build-android.txt e validation/apk-signature.txt.
-
-Ainda pendente: teste integrado de pareamento e transferência entre Windows e Android físicos, câmera, mDNS da rede, salvamento na galeria/Downloads (MediaStore e Android 7–9), exportação SAF, clipboard entre aparelhos, autorun, desempenho e FPS. Os testes automatizados incluem sockets TLS e arquivos reais de loopback, SQLite e componente visual; não substituem esses testes físicos. Não foi gerado instalador nem assinatura pública de distribuição Windows. O APK é um build debug para testes.
-
+Logs are in validation/. The Android APK is development-signed for testing. Windows is a portable ZIP without an installer. The vendored desktop_drop Android registration patch remains in place; see packages/desktop_drop/OMNILINK_PATCH.md.

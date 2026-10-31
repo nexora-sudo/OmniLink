@@ -1,6 +1,6 @@
-# OmniLink 0.1.0 Alpha
+# OmniLink 0.1.1 Alpha
 
-An open-source Flutter application for sharing files and text between Windows and Android over a local network. Material 3 interface with transparency, blur, light/dark/system themes, and Brazilian Portuguese localization.
+An open-source Flutter application for sharing files and text between Windows and Android over a local network. Material 3 interface with transparency, blur, light/dark/system themes, and English/Brazilian Portuguese localization. Select your language in Settings → Language; the choice is saved and applies immediately. English is the default when no preference has been saved.
 
 **Delivery status:** The Android debug APK and Windows release executable have been built and verified. The APK signature has been validated. Integration between physical devices and visual performance still require validation. See [VALIDATION.md](VALIDATION.md) for exact results and limitations.
 
@@ -10,14 +10,14 @@ An open-source Flutter application for sharing files and text between Windows an
 
 | Platform | Download | Install |
 | --- | --- | --- |
-| Android 7+ | [Android APK](https://github.com/nexora-sudo/OmniLink/releases/download/v0.1.0-alpha-build2/OmniLink-0.1.0-alpha-build2-android.apk) | Open the APK on your phone. This Alpha uses a development signature. |
-| Windows x64 | [Windows ZIP](https://github.com/nexora-sudo/OmniLink/releases/download/v0.1.0-alpha-build2/OmniLink-0.1.0-alpha-build2-windows-x64.zip) | Extract the entire ZIP and open `omnilink.exe`. Keep the DLLs and `data` folder together. |
+| Android 7+ | [Android APK](https://github.com/nexora-sudo/OmniLink/releases/download/v0.1.1/OmniLink-0.1.1-android.apk) | Open the APK on your phone. This Alpha uses a development signature. |
+| Windows x64 | [Windows ZIP](https://github.com/nexora-sudo/OmniLink/releases/download/v0.1.1/OmniLink-0.1.1-windows-x64.zip) | Extract the entire ZIP and open `omnilink.exe`. Keep the DLLs and `data` folder together. |
 
 Connect both devices to the same Wi-Fi/network, keep both apps open, create an invitation on one device, scan its QR code on Android, and confirm pairing. Select the paired device, send a small file, and accept it on the receiver. See the [quick start](docs/QUICK_START.md) for button names, saving files, and troubleshooting.
 
 ### Real screenshots
 
-Captured from the running Windows Build 2 application. The interface is currently in Brazilian Portuguese. These screens show an unpaired session; they do not demonstrate a completed transfer. The computer name, local IP address, and local destination path have been obscured.
+Captured from the running Windows Build 2 application. These screenshots show the previous Portuguese-only Build 2 interface; v0.1.1 also supports English. These screens show an unpaired session; they do not demonstrate a completed transfer. The computer name, local IP address, and local destination path have been obscured.
 
 **Devices**
 
@@ -41,6 +41,10 @@ Captured from the running Windows Build 2 application. The interface is currentl
 [![Watch the Windows interface tour](docs/media/windows-devices.png)](https://github.com/nexora-sudo/OmniLink/releases/download/v0.1.0-alpha-build2/omnilink-windows-tour.mp4)
 
 **[Watch or download the short MP4](https://github.com/nexora-sudo/OmniLink/releases/download/v0.1.0-alpha-build2/omnilink-windows-tour.mp4).** This is a captioned slideshow of the real screenshots above, not a recording of a device-to-device transfer. Android screenshots and physical-device transfer validation are still pending.
+
+## Version 0.1.1
+
+English and Portuguese interfaces with a persistent language selector. See the [v0.1.1 update log](docs/UPDATE_LOG_0.1.1.md).
 
 ## Features
 
@@ -105,7 +109,7 @@ This path is specific to the original delivery workspace and is not included in 
 
 ## First pairing
 
-The current application interface is in Brazilian Portuguese; the English labels below describe the corresponding actions.
+The application starts in English unless a language preference has been saved. Use Settings → Language to choose English or Português (Brasil); the English and Portuguese labels below refer to the same actions.
 
 1. Connect both devices to the same network and keep OmniLink open.
 2. On Windows, allow the application through the firewall for private networks only. The default TCP port is `45832`; mDNS uses UDP `5353`. No firewall rules are changed automatically.
@@ -158,14 +162,14 @@ The `packaging/windows/omnilink.iss` file can generate an installer with Inno Se
 
 ## GitHub
 
-The source is published in [nexora-sudo/OmniLink](https://github.com/nexora-sudo/OmniLink). The repository is public, so anyone can download and test the application. The [latest Build 2 release](https://github.com/nexora-sudo/OmniLink/releases/tag/v0.1.0-alpha-build2) includes the Android APK, Windows ZIP, source archive, installation instructions, and SHA-256 checksums.
+The source is published in [nexora-sudo/OmniLink](https://github.com/nexora-sudo/OmniLink). The repository is public, so anyone can download and test the application. The [latest v0.1.1 release](https://github.com/nexora-sudo/OmniLink/releases/tag/v0.1.1) includes the Android APK, Windows ZIP, source archive, installation instructions, and SHA-256 checksums.
 
 The repository includes an MIT license, changelog, contribution guide, ignore rules, protocol documentation, security documentation, a validation plan, and two workflows:
 
 - `ci.yml`: formatting, analysis, and tests on Windows for pushes and pull requests.
 - `build.yml`: manually triggered builds of the debug APK and Windows release folder, uploaded as workflow artifacts.
 
-Check the [Actions page](https://github.com/nexora-sudo/OmniLink/actions) for current workflow results. The published Build 2 binaries were built and verified locally. Do not commit builds, databases, credentials, or caches.
+Check the [Actions page](https://github.com/nexora-sudo/OmniLink/actions) for current workflow results. The published v0.1.1 binaries were built and verified locally. Do not commit builds, databases, credentials, or caches.
 
 ## Architecture
 

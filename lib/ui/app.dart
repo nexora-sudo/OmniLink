@@ -18,6 +18,7 @@ import '../services/discovery_service.dart';
 import '../services/platform_service.dart';
 import '../services/save_service.dart';
 import 'glass.dart';
+import '../services/app_language.dart';
 
 class OmniLinkApp extends StatefulWidget {
   const OmniLinkApp({super.key});
@@ -63,6 +64,7 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
       final support = await getApplicationSupportDirectory();
       repository = LocalRepository(p.join(support.path, 'omnilink.sqlite'));
       final repo = repository!;
+      AppLanguage.load(repo.getSetting('language'));
       themeMode = ThemeMode.values.firstWhere(
         (m) => m.name == repo.getSetting('theme'),
         orElse: () => ThemeMode.system,
@@ -100,7 +102,10 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
           receivedTexts.insert(0, text);
           if (receivedTexts.length > 100) receivedTexts.removeLast();
           showMessage(
-            'Texto recebido de ${text['peer']}. Abra Textos para copiar.',
+            tr(
+              'Texto recebido de ${text['peer']}. Abra Textos para copiar.',
+              "Text received from ${text['peer']}. Open Text to copy.",
+            ),
           );
           if (mounted) setState(() {});
         }),
@@ -115,7 +120,12 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
         try {
           await discovery!.start();
         } catch (e) {
-          showMessage('mDNS indisponível. Use conexão manual. $e');
+          showMessage(
+            tr(
+              'mDNS indisponível. Use conexão manual. $e',
+              "mDNS unavailable. Use a manual connection. $e",
+            ),
+          );
         }
       }
       clipboardTimer = Timer.periodic(
@@ -125,13 +135,19 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
       if (mounted) setState(() {});
     } catch (e) {
       if (mounted) {
-        setState(() => fatal = 'Não foi possível iniciar o OmniLink.\n$e');
+        setState(
+          () => fatal = tr(
+            'Não foi possível iniciar o OmniLink.\n$e',
+            "Could not start OmniLink.\n$e",
+          ),
+        );
       }
     }
   }
 
-  void showMessage(String message) =>
-      messenger.currentState?.showSnackBar(SnackBar(content: Text(message)));
+  void showMessage(String message) => messenger.currentState?.showSnackBar(
+    SnackBar(content: Text(AppLanguage.message(message))),
+  );
   Future<void> run(Future<void> Function() action) async {
     try {
       await action();
@@ -160,16 +176,16 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                 }
               });
               return AlertDialog(
-                title: Text(title),
-                content: Text(message),
+                title: Text(AppLanguage.message(title)),
+                content: Text(AppLanguage.message(message)),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(dialogContext, false),
-                    child: const Text('Recusar'),
+                    child: Text(tr('Recusar', "Decline")),
                   ),
                   FilledButton(
                     onPressed: () => Navigator.pop(dialogContext, true),
-                    child: const Text('Permitir'),
+                    child: Text(tr('Permitir', "Allow")),
                   ),
                 ],
               );
@@ -200,7 +216,7 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
     } catch (e) {
       autoClipboard = false;
       repository!.setSetting('autoClipboard', 'false');
-      showMessage('Sincronização pausada: $e');
+      showMessage(tr('Sincronização pausada: $e', "Clipboard sync paused: $e"));
       setState(() {});
     } finally {
       _clipboardBusy = false;
@@ -243,8 +259,8 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
     theme: omniTheme(Brightness.light),
     darkTheme: omniTheme(Brightness.dark),
     themeMode: themeMode,
-    locale: const Locale('pt', 'BR'),
-    supportedLocales: const [Locale('pt', 'BR')],
+    locale: Locale(AppLanguage.code),
+    supportedLocales: const [Locale('en'), Locale('pt', 'BR')],
     localizationsDelegates: GlobalMaterialLocalizations.delegates,
     home: Builder(
       builder: (context) {
@@ -273,20 +289,28 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                     child: Padding(
                       padding: const EdgeInsets.all(32),
                       child: SelectableText(
-                        '$fatal\n\nVerifique permissões, armazenamento e se a porta 45832 está livre. Reinicie o aplicativo.',
+                        tr(
+                          '$fatal\n\nVerifique permissões, armazenamento e se a porta 45832 está livre. Reinicie o aplicativo.',
+                          "$fatal\n\nCheck permissions, storage, and whether port 45832 is available. Restart the application.",
+                        ),
                       ),
                     ),
                   ),
                 )
               : node == null || discovery == null
-              ? const Scaffold(
+              ? Scaffold(
                   body: Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        CircularProgressIndicator(),
-                        SizedBox(height: 24),
-                        Text('Preparando sua conexão privada…'),
+                        const CircularProgressIndicator(),
+                        const SizedBox(height: 24),
+                        Text(
+                          tr(
+                            'Preparando sua conexão privada…',
+                            "Preparing your private connection…",
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -326,31 +350,43 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                                               NavigationRailLabelType.all,
                                           onDestinationSelected: (value) =>
                                               setState(() => page = value),
-                                          destinations: const [
+                                          destinations: [
                                             NavigationRailDestination(
-                                              icon: Icon(Icons.devices_rounded),
-                                              label: Text('Dispositivos'),
+                                              icon: const Icon(
+                                                Icons.devices_rounded,
+                                              ),
+                                              label: Text(
+                                                tr('Dispositivos', "Devices"),
+                                              ),
                                             ),
                                             NavigationRailDestination(
-                                              icon: Icon(
+                                              icon: const Icon(
                                                 Icons.swap_vert_rounded,
                                               ),
-                                              label: Text('Arquivos'),
+                                              label: Text(
+                                                tr('Arquivos', "Files"),
+                                              ),
                                             ),
                                             NavigationRailDestination(
-                                              icon: Icon(Icons.notes_rounded),
-                                              label: Text('Textos'),
+                                              icon: const Icon(
+                                                Icons.notes_rounded,
+                                              ),
+                                              label: Text(tr('Textos', "Text")),
                                             ),
                                             NavigationRailDestination(
-                                              icon: Icon(Icons.tune_rounded),
-                                              label: Text('Ajustes'),
+                                              icon: const Icon(
+                                                Icons.tune_rounded,
+                                              ),
+                                              label: Text(
+                                                tr('Ajustes', "Settings"),
+                                              ),
                                             ),
                                           ],
                                         ),
                                       ),
-                                      const Text(
-                                        '0.1.0 Alpha',
-                                        style: TextStyle(fontSize: 12),
+                                      Text(
+                                        tr('0.1.1 Alpha', "0.1.1 Alpha"),
+                                        style: const TextStyle(fontSize: 12),
                                       ),
                                     ],
                                   ),
@@ -396,10 +432,22 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                                               Expanded(
                                                 child: Text(
                                                   [
-                                                    'Dispositivos',
-                                                    'Transferências',
-                                                    'Textos compartilhados',
-                                                    'Configurações',
+                                                    tr(
+                                                      'Dispositivos',
+                                                      "Devices",
+                                                    ),
+                                                    tr(
+                                                      'Transferências',
+                                                      "Transfers",
+                                                    ),
+                                                    tr(
+                                                      'Textos compartilhados',
+                                                      "Shared text",
+                                                    ),
+                                                    tr(
+                                                      'Configurações',
+                                                      "Settings",
+                                                    ),
                                                   ][page],
                                                   style: Theme.of(context)
                                                       .textTheme
@@ -411,7 +459,10 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                                                 ),
                                               ),
                                               IconButton(
-                                                tooltip: 'Atualizar conexões',
+                                                tooltip: tr(
+                                                  'Atualizar conexões',
+                                                  "Refresh connections",
+                                                ),
                                                 onPressed: () =>
                                                     run(node!.poll),
                                                 icon: const Icon(
@@ -452,9 +503,12 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                                               .colorScheme
                                               .primaryContainer
                                               .withValues(alpha: .95),
-                                          child: const Center(
+                                          child: Center(
                                             child: Text(
-                                              'Solte para enviar ao dispositivo selecionado',
+                                              tr(
+                                                'Solte para enviar ao dispositivo selecionado',
+                                                "Drop to send to the selected device",
+                                              ),
                                               textAlign: TextAlign.center,
                                             ),
                                           ),
@@ -473,22 +527,22 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                               selectedIndex: page,
                               onDestinationSelected: (value) =>
                                   setState(() => page = value),
-                              destinations: const [
+                              destinations: [
                                 NavigationDestination(
-                                  icon: Icon(Icons.devices_rounded),
-                                  label: 'Dispositivos',
+                                  icon: const Icon(Icons.devices_rounded),
+                                  label: tr('Dispositivos', "Devices"),
                                 ),
                                 NavigationDestination(
-                                  icon: Icon(Icons.swap_vert_rounded),
-                                  label: 'Arquivos',
+                                  icon: const Icon(Icons.swap_vert_rounded),
+                                  label: tr('Arquivos', "Files"),
                                 ),
                                 NavigationDestination(
-                                  icon: Icon(Icons.notes_rounded),
-                                  label: 'Textos',
+                                  icon: const Icon(Icons.notes_rounded),
+                                  label: tr('Textos', "Text"),
                                 ),
                                 NavigationDestination(
-                                  icon: Icon(Icons.tune_rounded),
-                                  label: 'Ajustes',
+                                  icon: const Icon(Icons.tune_rounded),
+                                  label: tr('Ajustes', "Settings"),
                                 ),
                               ],
                             ),
@@ -509,26 +563,35 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Row(
+              Row(
                 children: [
-                  Icon(Icons.lock_outline_rounded, size: 18),
-                  SizedBox(width: 8),
+                  const Icon(Icons.lock_outline_rounded, size: 18),
+                  const SizedBox(width: 8),
                   Text(
-                    'SUA REDE. SEUS DISPOSITIVOS.',
-                    style: TextStyle(fontSize: 11, letterSpacing: 1.8),
+                    tr(
+                      'SUA REDE. SEUS DISPOSITIVOS.',
+                      "YOUR NETWORK. YOUR DEVICES.",
+                    ),
+                    style: const TextStyle(fontSize: 11, letterSpacing: 1.8),
                   ),
                 ],
               ),
               const SizedBox(height: 18),
               Text(
-                'Tudo perto.\nTudo conectado.',
+                tr(
+                  'Tudo perto.\nTudo conectado.',
+                  "Everything nearby.\nEverything connected.",
+                ),
                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
               ),
               const SizedBox(height: 12),
-              const Text(
-                'Arquivos e textos entre seu computador e celular, pela rede local.',
+              Text(
+                tr(
+                  'Arquivos e textos entre seu computador e celular, pela rede local.',
+                  "Files and text between your computer and phone, over your local network.",
+                ),
               ),
               const SizedBox(height: 24),
               Wrap(
@@ -538,35 +601,46 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                   FilledButton.icon(
                     onPressed: () => run(showInvite),
                     icon: const Icon(Icons.qr_code_rounded),
-                    label: const Text('Criar convite'),
+                    label: Text(tr('Criar convite', "Create invitation")),
                   ),
                   OutlinedButton.icon(
                     onPressed: () => pairDialog(),
                     icon: const Icon(Icons.add_link_rounded),
-                    label: const Text('Conectar / IP manual'),
+                    label: Text(
+                      tr('Conectar / IP manual', "Connect / Manual IP"),
+                    ),
                   ),
                   if (Platform.isAndroid)
                     OutlinedButton.icon(
                       onPressed: () => run(scan),
                       icon: const Icon(Icons.qr_code_scanner_rounded),
-                      label: const Text('Ler QR Code'),
+                      label: Text(tr('Ler QR Code', "Scan QR code")),
                     ),
                 ],
               ),
               const SizedBox(height: 20),
               SelectableText(
-                '${n.name} • ${addresses.isEmpty ? 'Sem IPv4 local disponível' : addresses.join(' / ')}:${n.port}',
+                tr(
+                  '${n.name} • ${addresses.isEmpty ? 'Sem IPv4 local disponível' : addresses.join(' / ')}:${n.port}',
+                  "${n.name} • ${addresses.isEmpty ? 'No local IPv4 available' : addresses.join(' / ')}:${n.port}",
+                ),
                 style: const TextStyle(fontSize: 12),
               ),
             ],
           ),
         ),
         const SizedBox(height: 24),
-        section('Seus dispositivos', '${n.peers.length} pareados'),
+        section(
+          tr('Seus dispositivos', "Your devices"),
+          tr('${n.peers.length} pareados', "${n.peers.length} paired"),
+        ),
         if (n.peers.isEmpty)
-          const Glass(
+          Glass(
             child: Text(
-              'Nenhum dispositivo pareado. Abra o OmniLink nos dois aparelhos e crie um convite em um deles.',
+              tr(
+                'Nenhum dispositivo pareado. Abra o OmniLink nos dois aparelhos e crie um convite em um deles.',
+                "No devices paired. Open OmniLink on both devices and create an invitation on one of them.",
+              ),
             ),
           ),
         ...n.peers.values.map(
@@ -596,7 +670,10 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                               ),
                             ),
                             Text(
-                              '${device.host}:${device.port} • ${device.status}',
+                              tr(
+                                '${device.host}:${device.port} • ${device.status}',
+                                "${device.host}:${device.port} • ${statusLabel(device.status)}",
+                              ),
                             ),
                           ],
                         ),
@@ -621,17 +698,20 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                           });
                         },
                         icon: const Icon(Icons.upload_file_rounded),
-                        label: const Text('Enviar arquivos'),
+                        label: Text(tr('Enviar arquivos', "Send files")),
                       ),
                       TextButton(
                         onPressed: () => infoDialog(device),
-                        child: const Text('Detalhes'),
+                        child: Text(tr('Detalhes', "Details")),
                       ),
                       TextButton(
                         onPressed: () => run(() async {
                           if (await approve(
-                            'Remover dispositivo?',
-                            'O acesso de ${device.name} será revogado neste aparelho.',
+                            tr('Remover dispositivo?', "Remove device?"),
+                            tr(
+                              'O acesso de ${device.name} será revogado neste aparelho.',
+                              "Access for ${device.name} will be revoked on this device.",
+                            ),
                           )) {
                             await n.forget(device);
                             if (selectedPeer == device.id) {
@@ -639,7 +719,7 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                             }
                           }
                         }),
-                        child: const Text('Remover'),
+                        child: Text(tr('Remover', "Remove")),
                       ),
                     ],
                   ),
@@ -650,8 +730,10 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
         ),
         const SizedBox(height: 16),
         section(
-          'Na mesma rede',
-          discovering ? 'mDNS' : 'Descoberta desativada',
+          tr('Na mesma rede', "On the same network"),
+          discovering
+              ? 'mDNS'
+              : tr('Descoberta desativada', "Discovery disabled"),
         ),
         ...discovery!.nearby.values
             .where((d) => !n.peers.containsKey(d.id))
@@ -662,9 +744,14 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                   child: ListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Text(d.name),
-                    subtitle: Text('${d.host}:${d.port} • não pareado'),
+                    subtitle: Text(
+                      tr(
+                        '${d.host}:${d.port} • não pareado',
+                        "${d.host}:${d.port} • not paired",
+                      ),
+                    ),
                     trailing: IconButton(
-                      tooltip: 'Parear',
+                      tooltip: tr('Parear', "Pair"),
                       icon: const Icon(Icons.add_link),
                       onPressed: () => pairDialog(host: d.host, port: d.port),
                     ),
@@ -675,8 +762,11 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
         if (discovery!.nearby.values
             .where((d) => !n.peers.containsKey(d.id))
             .isEmpty)
-          const Text(
-            'Nenhum novo dispositivo detectado. A conexão manual também funciona quando o roteador bloqueia mDNS.',
+          Text(
+            tr(
+              'Nenhum novo dispositivo detectado. A conexão manual também funciona quando o roteador bloqueia mDNS.',
+              "No new devices detected. Manual connection also works when the router blocks mDNS.",
+            ),
           ),
       ],
     );
@@ -699,13 +789,18 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
   Widget peerSelector() => DropdownButtonFormField<String>(
     initialValue: peer?.id,
     key: ValueKey(selectedPeer),
-    decoration: const InputDecoration(labelText: 'Dispositivo de destino'),
+    decoration: InputDecoration(
+      labelText: tr('Dispositivo de destino', "Destination device"),
+    ),
     items: node!.peers.values
         .map(
           (p) => DropdownMenuItem(
             value: p.id,
             child: Text(
-              '${p.name} • ${p.status}',
+              tr(
+                '${p.name} • ${p.status}',
+                "${p.name} • ${statusLabel(p.status)}",
+              ),
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -739,36 +834,56 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                             .toList();
                         if (paths.length != result.files.length) {
                           showMessage(
-                            'Alguns arquivos não estão disponíveis localmente.',
+                            tr(
+                              'Alguns arquivos não estão disponíveis localmente.',
+                              "Some files are not available locally.",
+                            ),
                           );
                         }
                         await sendPaths(paths);
                       }),
                 icon: const Icon(Icons.upload_file_rounded),
                 label: Text(
-                  _sendingFiles ? 'Enviando arquivos…' : 'Selecionar arquivos',
+                  _sendingFiles
+                      ? tr('Enviando arquivos…', "Sending files…")
+                      : tr('Selecionar arquivos', "Select files"),
                 ),
               ),
               const SizedBox(height: 16),
               Text(
                 Platform.isWindows
-                    ? 'Ou arraste arquivos para esta janela. Até 4 GiB por arquivo.'
-                    : 'Seleção pelo sistema. Mantenha o aplicativo aberto durante a transferência.',
+                    ? tr(
+                        'Ou arraste arquivos para esta janela. Até 4 GiB por arquivo.',
+                        "Or drag files into this window. Up to 4 GiB per file.",
+                      )
+                    : tr(
+                        'Seleção pelo sistema. Mantenha o aplicativo aberto durante a transferência.',
+                        "Select files using the system picker. Keep the app open during transfers.",
+                      ),
               ),
               const SizedBox(height: 10),
               SelectableText(
-                'Destino: ${node!.downloads.path}',
+                tr(
+                  'Destino: ${node!.downloads.path}',
+                  "Destination: ${node!.downloads.path}",
+                ),
                 style: const TextStyle(fontSize: 12),
               ),
             ],
           ),
         ),
         const SizedBox(height: 24),
-        section('Atividade e histórico', '${list.length} arquivos'),
+        section(
+          tr('Atividade e histórico', "Activity and history"),
+          tr('${list.length} arquivos', "${list.length} files"),
+        ),
         if (list.isEmpty)
-          const Glass(
+          Glass(
             child: Text(
-              'Suas transferências aparecerão aqui, com progresso e verificação de integridade.',
+              tr(
+                'Suas transferências aparecerão aqui, com progresso e verificação de integridade.',
+                "Your transfers will appear here, with progress and integrity verification.",
+              ),
             ),
           ),
         ...list.map(
@@ -794,7 +909,7 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                       ),
                       if (t.state != 'concluído' && t.state != 'cancelado')
                         IconButton(
-                          tooltip: 'Cancelar',
+                          tooltip: tr('Cancelar', "Cancel"),
                           onPressed: () => run(() => node!.cancel(t)),
                           icon: const Icon(Icons.close_rounded),
                         ),
@@ -807,28 +922,34 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    '${t.state} • ${(t.progress * 100).toStringAsFixed(1)}% • ${(t.done / 1048576).toStringAsFixed(1)} / ${(t.size / 1048576).toStringAsFixed(1)} MiB',
+                    tr(
+                      '${t.state} • ${(t.progress * 100).toStringAsFixed(1)}% • ${(t.done / 1048576).toStringAsFixed(1)} / ${(t.size / 1048576).toStringAsFixed(1)} MiB',
+                      "${statusLabel(t.state)} • ${(t.progress * 100).toStringAsFixed(1)}% • ${(t.done / 1048576).toStringAsFixed(1)} / ${(t.size / 1048576).toStringAsFixed(1)} MiB",
+                    ),
                   ),
                   if (t.speed > 0)
                     Text(
-                      '${(t.speed / 1000000).toStringAsFixed(2)} MB/s • ${t.eta}s restantes (estimativa)',
+                      tr(
+                        '${(t.speed / 1000000).toStringAsFixed(2)} MB/s • ${t.eta}s restantes (estimativa)',
+                        "${(t.speed / 1000000).toStringAsFixed(2)} MB/s • ${t.eta}s remaining (estimated)",
+                      ),
                     ),
                   if (t.error != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 8),
                       child: Text(
-                        t.error!,
+                        AppLanguage.message(t.error!),
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.error,
                         ),
                       ),
                     ),
                   if (t.state == 'concluído')
-                    const Padding(
-                      padding: EdgeInsets.only(top: 8),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
                       child: Text(
-                        'SHA-256 verificado',
-                        style: TextStyle(fontSize: 12),
+                        tr('SHA-256 verificado', "SHA-256 verified"),
+                        style: const TextStyle(fontSize: 12),
                       ),
                     ),
                   Wrap(
@@ -837,12 +958,14 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                       if (!t.incoming && !t.busy && t.state != 'concluído')
                         TextButton(
                           onPressed: () => run(() => node!.resume(t)),
-                          child: const Text('Retomar'),
+                          child: Text(tr('Retomar', "Resume")),
                         ),
                       if (t.incoming && !t.busy && t.state != 'concluído')
                         TextButton(
                           onPressed: () => run(() => node!.discardPartial(t)),
-                          child: const Text('Excluir parcial'),
+                          child: Text(
+                            tr('Excluir parcial', "Delete partial file"),
+                          ),
                         ),
                       if (t.incoming && t.state == 'concluído')
                         TextButton.icon(
@@ -852,7 +975,7 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                             );
                           }),
                           icon: const Icon(Icons.share_outlined),
-                          label: const Text('Compartilhar'),
+                          label: Text(tr('Compartilhar', "Share")),
                         ),
                       if (t.incoming && t.state == 'concluído') ...[
                         if (Platform.isAndroid &&
@@ -862,7 +985,9 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                                 ? null
                                 : () => saveReceived(t, gallery: true),
                             icon: const Icon(Icons.photo_library_outlined),
-                            label: const Text('Salvar na galeria'),
+                            label: Text(
+                              tr('Salvar na galeria', "Save to gallery"),
+                            ),
                           ),
                         TextButton.icon(
                           onPressed: savingFiles.contains(t.id)
@@ -871,8 +996,11 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                           icon: const Icon(Icons.download_rounded),
                           label: Text(
                             savingFiles.contains(t.id)
-                                ? 'Salvando…'
-                                : 'Salvar em Downloads',
+                                ? tr('Salvando…', "Saving…")
+                                : tr(
+                                    'Salvar em Downloads',
+                                    "Save to Downloads",
+                                  ),
                           ),
                         ),
                       ],
@@ -882,7 +1010,7 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                         TextButton(
                           onPressed: () =>
                               run(() => PlatformService.exportFile(t.path)),
-                          child: const Text('Salvar em…'),
+                          child: Text(tr('Salvar em…', "Save as…")),
                         ),
                       if (t.state == 'concluído')
                         TextButton(
@@ -890,9 +1018,9 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                             await Clipboard.setData(
                               ClipboardData(text: t.path),
                             );
-                            showMessage('Caminho copiado.');
+                            showMessage(tr('Caminho copiado.', "Path copied."));
                           }),
-                          child: const Text('Copiar caminho'),
+                          child: Text(tr('Copiar caminho', "Copy path")),
                         ),
                     ],
                   ),
@@ -911,11 +1039,16 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
       final location = await SaveService.save(transfer.path, gallery: gallery);
       showMessage(
         gallery
-            ? 'Salvo na galeria, no álbum OmniLink.'
-            : 'Arquivo salvo em $location',
+            ? tr(
+                'Salvo na galeria, no álbum OmniLink.',
+                "Saved to the OmniLink gallery album.",
+              )
+            : tr('Arquivo salvo em $location', "File saved to $location"),
       );
     } catch (error) {
-      showMessage('Não foi possível salvar: $error');
+      showMessage(
+        tr('Não foi possível salvar: $error', "Could not save: $error"),
+      );
     } finally {
       if (mounted) setState(() => savingFiles.remove(transfer.id));
     }
@@ -924,11 +1057,18 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
   Future<void> sendPaths(List<String> paths) async {
     final target = peer;
     if (target == null) {
-      showMessage('Selecione um dispositivo de destino.');
+      showMessage(
+        tr(
+          'Selecione um dispositivo de destino.',
+          "Select a destination device.",
+        ),
+      );
       return;
     }
     if (_sendingFiles) {
-      showMessage('Aguarde o envio atual.');
+      showMessage(
+        tr('Aguarde o envio atual.', "Wait for the current transfer."),
+      );
       return;
     }
     setState(() {
@@ -938,7 +1078,9 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
     try {
       for (final path in paths) {
         if (!await File(path).exists()) {
-          showMessage('Arquivo indisponível: $path');
+          showMessage(
+            tr('Arquivo indisponível: $path', "File unavailable: $path"),
+          );
           continue;
         }
         await run(() async {
@@ -971,8 +1113,8 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                 minLines: 4,
                 maxLines: 10,
                 maxLength: 16000,
-                decoration: const InputDecoration(
-                  labelText: 'Texto para compartilhar',
+                decoration: InputDecoration(
+                  labelText: tr('Texto para compartilhar', "Text to share"),
                   alignLabelWithHint: true,
                 ),
               ),
@@ -986,10 +1128,12 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                         ? null
                         : () => run(() async {
                             await node!.sendText(peer!, textController.text);
-                            showMessage('Texto entregue.');
+                            showMessage(
+                              tr('Texto entregue.', "Text delivered."),
+                            );
                           }),
                     icon: const Icon(Icons.send_rounded),
-                    label: const Text('Enviar texto'),
+                    label: Text(tr('Enviar texto', "Send text")),
                   ),
                   OutlinedButton.icon(
                     onPressed: () => run(() async {
@@ -1000,24 +1144,36 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                           '';
                     }),
                     icon: const Icon(Icons.paste_rounded),
-                    label: const Text('Colar'),
+                    label: Text(tr('Colar', "Paste")),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Textos recebidos só entram na sua área de transferência quando você toca em Copiar. No Android, a leitura é manual.',
+              Text(
+                tr(
+                  'Textos recebidos só entram na sua área de transferência quando você toca em Copiar. No Android, a leitura é manual.',
+                  "Received text is only copied to your clipboard when you tap Copy. On Android, clipboard reading is manual.",
+                ),
               ),
             ],
           ),
         ),
         const SizedBox(height: 24),
         section(
-          'Textos recebidos / histórico',
-          node!.textHistory ? 'Salvo neste aparelho' : 'Apenas nesta sessão',
+          tr('Textos recebidos / histórico', "Received text / history"),
+          node!.textHistory
+              ? tr('Salvo neste aparelho', "Saved on this device")
+              : tr('Apenas nesta sessão', "Only in this session"),
         ),
         if (records.isEmpty)
-          const Glass(child: Text('Nenhum texto compartilhado nesta sessão.')),
+          Glass(
+            child: Text(
+              tr(
+                'Nenhum texto compartilhado nesta sessão.',
+                "No text shared in this session.",
+              ),
+            ),
+          ),
         ...records.map(
           (r) => Padding(
             padding: const EdgeInsets.only(bottom: 12),
@@ -1035,10 +1191,10 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                     onPressed: () => run(() async {
                       _lastClipboard = r['text'];
                       await Clipboard.setData(ClipboardData(text: r['text']!));
-                      showMessage('Texto copiado.');
+                      showMessage(tr('Texto copiado.', "Text copied."));
                     }),
                     icon: const Icon(Icons.copy_rounded),
-                    label: const Text('Copiar'),
+                    label: Text(tr('Copiar', "Copy")),
                   ),
                 ],
               ),
@@ -1057,35 +1213,55 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
           children: [
             DropdownButtonFormField<ThemeMode>(
               initialValue: themeMode,
-              decoration: const InputDecoration(labelText: 'Aparência'),
-              items: const [
+              decoration: InputDecoration(
+                labelText: tr('Aparência', "Appearance"),
+              ),
+              items: [
                 DropdownMenuItem(
                   value: ThemeMode.system,
-                  child: Text('Automático'),
+                  child: Text(tr('Automático', "System")),
                 ),
-                DropdownMenuItem(value: ThemeMode.light, child: Text('Claro')),
-                DropdownMenuItem(value: ThemeMode.dark, child: Text('Escuro')),
+                DropdownMenuItem(
+                  value: ThemeMode.light,
+                  child: Text(tr('Claro', "Light")),
+                ),
+                DropdownMenuItem(
+                  value: ThemeMode.dark,
+                  child: Text(tr('Escuro', "Dark")),
+                ),
               ],
               onChanged: (m) {
                 setState(() => themeMode = m!);
                 repository!.setSetting('theme', m!.name);
               },
             ),
-            const ListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text('Idioma'),
-              subtitle: Text('Português (Brasil)'),
+            DropdownButtonFormField<String>(
+              key: ValueKey(AppLanguage.code),
+              initialValue: AppLanguage.code,
+              decoration: InputDecoration(labelText: tr('Idioma', 'Language')),
+              items: const [
+                DropdownMenuItem(value: 'en', child: Text('English')),
+                DropdownMenuItem(
+                  value: 'pt',
+                  child: Text('Português (Brasil)'),
+                ),
+              ],
+              onChanged: (value) {
+                if (value == null) return;
+                repository!.setSetting('language', value);
+                setState(() => AppLanguage.load(value));
+              },
             ),
             ListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Nome do dispositivo'),
+              title: Text(tr('Nome do dispositivo', "Device name")),
               subtitle: Text(node!.name),
               trailing: const Icon(Icons.edit_outlined),
               onTap: () => run(rename),
             ),
             ListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Pasta de recebimento'),
+              title: Text(tr('Pasta de recebimento', "Receive folder")),
               subtitle: Text(node!.downloads.path),
               trailing: Platform.isWindows
                   ? const Icon(Icons.folder_open_rounded)
@@ -1102,13 +1278,21 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                   : null,
             ),
             if (Platform.isAndroid)
-              const Text(
-                'Após receber, use Salvar na galeria para fotos e vídeos ou Salvar em Downloads para qualquer arquivo. Salvar em… permite escolher outra pasta.',
+              Text(
+                tr(
+                  'Após receber, use Salvar na galeria para fotos e vídeos ou Salvar em Downloads para qualquer arquivo. Salvar em… permite escolher outra pasta.',
+                  "After receiving a file, use Save to gallery for photos and videos or Save to Downloads for any file. Save as… lets you choose another folder.",
+                ),
               ),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Descoberta automática'),
-              subtitle: const Text('Localiza e anuncia dispositivos via mDNS'),
+              title: Text(tr('Descoberta automática', "Automatic discovery")),
+              subtitle: Text(
+                tr(
+                  'Localiza e anuncia dispositivos via mDNS',
+                  "Find and advertise devices using mDNS",
+                ),
+              ),
               value: discovering,
               onChanged: (v) => run(() async {
                 if (v) {
@@ -1122,7 +1306,7 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
             ),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Compartilhar textos'),
+              title: Text(tr('Compartilhar textos', "Share text")),
               value: node!.clipboardEnabled,
               onChanged: (v) {
                 setState(() => node!.clipboardEnabled = v);
@@ -1131,9 +1315,14 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
             ),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Salvar histórico de textos'),
-              subtitle: const Text(
-                'Desativado por padrão; conteúdo salvo localmente sem criptografia adicional',
+              title: Text(
+                tr('Salvar histórico de textos', "Save text history"),
+              ),
+              subtitle: Text(
+                tr(
+                  'Desativado por padrão; conteúdo salvo localmente sem criptografia adicional',
+                  "Disabled by default; content is stored locally without additional encryption",
+                ),
               ),
               value: node!.textHistory,
               onChanged: (v) {
@@ -1146,16 +1335,24 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                 repository!.clearTexts();
                 setState(receivedTexts.clear);
               },
-              child: const Text('Apagar histórico de textos'),
+              child: Text(
+                tr('Apagar histórico de textos', "Clear text history"),
+              ),
             ),
             if (Platform.isWindows)
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text(
-                  'Enviar área de transferência automaticamente',
+                title: Text(
+                  tr(
+                    'Enviar área de transferência automaticamente',
+                    "Send clipboard automatically",
+                  ),
                 ),
-                subtitle: const Text(
-                  'Envia qualquer texto copiado ao dispositivo selecionado enquanto o app está aberto. Pode incluir senhas.',
+                subtitle: Text(
+                  tr(
+                    'Envia qualquer texto copiado ao dispositivo selecionado enquanto o app está aberto. Pode incluir senhas.',
+                    "Sends any copied text to the selected device while the app is open. May include passwords.",
+                  ),
                 ),
                 value: autoClipboard,
                 onChanged: (v) {
@@ -1166,7 +1363,9 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
             if (Platform.isWindows)
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Iniciar com o Windows'),
+                title: Text(
+                  tr('Iniciar com o Windows', "Launch at Windows startup"),
+                ),
                 value: startup,
                 onChanged: (v) => run(() async {
                   await PlatformService.setStartup(v);
@@ -1181,37 +1380,48 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Este dispositivo',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+            Text(
+              tr('Este dispositivo', "This device"),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 12),
             Text(
               '${localInfo['os'] ?? Platform.operatingSystem}\n${localInfo['version'] ?? Platform.operatingSystemVersion}',
             ),
             Text(
-              'Bateria: ${localInfo['battery'] == null ? 'não disponível' : '${localInfo['battery']}%'}',
+              tr(
+                'Bateria: ${localInfo['battery'] == null ? 'não disponível' : '${localInfo['battery']}%'}',
+                "Battery: ${localInfo['battery'] == null ? 'not available' : '${localInfo['battery']}%'}",
+              ),
             ),
             Text(
-              'Espaço disponível: ${localInfo['freeBytes'] == null ? 'não disponível' : '${(localInfo['freeBytes'] / 1073741824).toStringAsFixed(1)} GiB'}',
+              tr(
+                'Espaço disponível: ${localInfo['freeBytes'] == null ? 'não disponível' : '${(localInfo['freeBytes'] / 1073741824).toStringAsFixed(1)} GiB'}',
+                "Available space: ${localInfo['freeBytes'] == null ? 'not available' : '${(localInfo['freeBytes'] / 1073741824).toStringAsFixed(1)} GiB'}",
+              ),
             ),
             const SizedBox(height: 20),
-            const Text(
-              'OmniLink 0.1.0 Alpha',
-              style: TextStyle(fontWeight: FontWeight.w700),
+            Text(
+              tr('OmniLink 0.1.1 Alpha', "OmniLink 0.1.1 Alpha"),
+              style: const TextStyle(fontWeight: FontWeight.w700),
             ),
-            const Text(
-              'Código aberto • Licença MIT\nSem contas, servidores externos ou telemetria.\nMantenha o app aberto nos dois aparelhos durante o uso.',
+            Text(
+              tr(
+                'Código aberto • Licença MIT\nSem contas, servidores externos ou telemetria.\nMantenha o app aberto nos dois aparelhos durante o uso.',
+                "Open source • MIT License\nNo accounts, external servers, or telemetry.\nKeep the app open on both devices during use.",
+              ),
             ),
             TextButton(
               onPressed: () => showLicensePage(
                 context: context,
                 applicationName: 'OmniLink',
-                applicationVersion: '0.1.0 Alpha',
+                applicationVersion: tr('0.1.1 Alpha', "0.1.1 Alpha"),
                 applicationLegalese:
                     'MIT License • Copyright 2026 OmniLink contributors',
               ),
-              child: const Text('Licenças de código aberto'),
+              child: Text(
+                tr('Licenças de código aberto', "Open-source licenses"),
+              ),
             ),
           ],
         ),
@@ -1224,16 +1434,16 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
     final value = await showDialog<String>(
       context: navigator.currentContext!,
       builder: (c) => AlertDialog(
-        title: const Text('Nome do dispositivo'),
+        title: Text(tr('Nome do dispositivo', "Device name")),
         content: TextField(controller: controller, maxLength: 80),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c),
-            child: const Text('Cancelar'),
+            child: Text(tr('Cancelar', "Cancel")),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(c, controller.text.trim()),
-            child: const Text('Salvar'),
+            child: Text(tr('Salvar', "Save")),
           ),
         ],
       ),
@@ -1248,7 +1458,12 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
   Future<void> showInvite() async {
     addresses = await DiscoveryService.addresses();
     if (addresses.isEmpty) {
-      throw LinkException('Conecte-se a uma rede Wi-Fi ou Ethernet local.');
+      throw LinkException(
+        tr(
+          'Conecte-se a uma rede Wi-Fi ou Ethernet local.',
+          "Connect to a local Wi-Fi or Ethernet network.",
+        ),
+      );
     }
     var host = addresses.first;
     var invite = node!.createInvite(host);
@@ -1257,15 +1472,18 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
         context: navigator.currentContext!,
         builder: (c) => StatefulBuilder(
           builder: (c, update) => AlertDialog(
-            title: const Text('Conectar um dispositivo'),
+            title: Text(tr('Conectar um dispositivo', "Connect a device")),
             content: SizedBox(
               width: 400,
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text(
-                      'Leia este QR no outro aparelho. Convite válido por 5 minutos e uma única tentativa.',
+                    Text(
+                      tr(
+                        'Leia este QR no outro aparelho. Convite válido por 5 minutos e uma única tentativa.',
+                        "Scan this QR code on the other device. The invitation is valid for 5 minutes and a single attempt.",
+                      ),
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
@@ -1293,17 +1511,28 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                           ClipboardData(text: invite.encode()),
                         );
                         showMessage(
-                          'Convite copiado. Compartilhe apenas com o outro aparelho.',
+                          tr(
+                            'Convite copiado. Compartilhe apenas com o outro aparelho.',
+                            "Invitation copied. Share it only with the other device.",
+                          ),
                         );
                       }),
                       icon: const Icon(Icons.copy),
-                      label: const Text('Copiar convite'),
+                      label: Text(tr('Copiar convite', "Copy invitation")),
                     ),
                     ExpansionTile(
-                      title: const Text('Dados para conexão manual'),
+                      title: Text(
+                        tr(
+                          'Dados para conexão manual',
+                          "Manual connection details",
+                        ),
+                      ),
                       children: [
                         SelectableText(
-                          'IP: $host\nPorta: ${invite.port}\nCertificado SHA-256:\n${invite.fingerprint}\nCódigo secreto:\n${invite.secret}',
+                          tr(
+                            'IP: $host\nPorta: ${invite.port}\nCertificado SHA-256:\n${invite.fingerprint}\nCódigo secreto:\n${invite.secret}',
+                            "IP: $host\nPort: ${invite.port}\nSHA-256 certificate:\n${invite.fingerprint}\nSecret code:\n${invite.secret}",
+                          ),
                         ),
                       ],
                     ),
@@ -1314,7 +1543,9 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(c),
-                child: const Text('Fechar e revogar convite'),
+                child: Text(
+                  tr('Fechar e revogar convite', "Close and revoke invitation"),
+                ),
               ),
             ],
           ),
@@ -1338,20 +1569,28 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
       context: navigator.currentContext!,
       builder: (c) => StatefulBuilder(
         builder: (c, update) => AlertDialog(
-          title: const Text('Parear dispositivo'),
+          title: Text(tr('Parear dispositivo', "Pair device")),
           content: SizedBox(
             width: 430,
             child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'Crie um convite no outro aparelho. Confirme o pareamento também na tela dele.',
+                  Text(
+                    tr(
+                      'Crie um convite no outro aparelho. Confirme o pareamento também na tela dele.',
+                      "Create an invitation on the other device. Confirm pairing on its screen too.",
+                    ),
                   ),
                   const SizedBox(height: 16),
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Informar IP e credenciais'),
+                    title: Text(
+                      tr(
+                        'Informar IP e credenciais',
+                        "Enter IP and credentials",
+                      ),
+                    ),
                     value: manual,
                     onChanged: busy ? null : (v) => update(() => manual = v),
                   ),
@@ -1359,42 +1598,53 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                     TextField(
                       controller: input,
                       maxLines: 4,
-                      decoration: const InputDecoration(
-                        labelText: 'Cole o convite OmniLink',
+                      decoration: InputDecoration(
+                        labelText: tr(
+                          'Cole o convite OmniLink',
+                          "Paste the OmniLink invitation",
+                        ),
                       ),
                     ),
                   if (manual) ...[
                     TextField(
                       controller: ip,
-                      decoration: const InputDecoration(
-                        labelText: 'IPv4 local',
+                      decoration: InputDecoration(
+                        labelText: tr('IPv4 local', "Local IPv4"),
                       ),
                     ),
                     const SizedBox(height: 8),
                     TextField(
                       controller: portInput,
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(labelText: 'Porta'),
+                      decoration: InputDecoration(
+                        labelText: tr('Porta', "Port"),
+                      ),
                     ),
                     const SizedBox(height: 8),
                     TextField(
                       controller: fingerprint,
-                      decoration: const InputDecoration(
-                        labelText: 'Certificado SHA-256 do convite',
+                      decoration: InputDecoration(
+                        labelText: tr(
+                          'Certificado SHA-256 do convite',
+                          "Invitation SHA-256 certificate",
+                        ),
                       ),
                     ),
                     const SizedBox(height: 8),
                     TextField(
                       controller: secret,
-                      decoration: const InputDecoration(
-                        labelText: 'Código secreto do convite',
+                      decoration: InputDecoration(
+                        labelText: tr(
+                          'Código secreto do convite',
+                          "Invitation secret code",
+                        ),
                       ),
                     ),
                   ],
                   if (error != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 12),
-                      child: Text(error!),
+                      child: Text(AppLanguage.message(error!)),
                     ),
                   if (busy)
                     const Padding(
@@ -1408,7 +1658,7 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
           actions: [
             TextButton(
               onPressed: busy ? null : () => Navigator.pop(c),
-              child: const Text('Fechar'),
+              child: Text(tr('Fechar', "Close")),
             ),
             FilledButton(
               onPressed: busy
@@ -1430,7 +1680,12 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                         final result = await node!.pair(invite);
                         setState(() => selectedPeer = result.id);
                         if (c.mounted) Navigator.pop(c);
-                        showMessage('Dispositivo pareado com segurança.');
+                        showMessage(
+                          tr(
+                            'Dispositivo pareado com segurança.',
+                            "Device paired securely.",
+                          ),
+                        );
                       } catch (e) {
                         if (c.mounted) {
                           update(() {
@@ -1440,7 +1695,7 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
                         }
                       }
                     },
-              child: const Text('Conectar'),
+              child: Text(tr('Conectar', "Connect")),
             ),
           ],
         ),
@@ -1455,7 +1710,9 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
     if (value == null) return;
     final result = await node!.pair(Invite.parse(value));
     setState(() => selectedPeer = result.id);
-    showMessage('Dispositivo pareado com segurança.');
+    showMessage(
+      tr('Dispositivo pareado com segurança.', "Device paired securely."),
+    );
   }
 
   void infoDialog(Peer device) => showDialog<void>(
@@ -1464,13 +1721,16 @@ class _OmniLinkAppState extends State<OmniLinkApp> with WidgetsBindingObserver {
       title: Text(device.name),
       content: SingleChildScrollView(
         child: SelectableText(
-          'Estado: ${device.status}\nIP: ${device.host}:${device.port}\nSistema: ${device.info['os'] ?? 'não disponível'}\nVersão: ${device.info['version'] ?? 'não disponível'}\nBateria: ${device.info['battery'] == null ? 'não disponível' : '${device.info['battery']}%'}\nEspaço livre: ${device.info['freeBytes'] == null ? 'não disponível' : '${(device.info['freeBytes'] / 1073741824).toStringAsFixed(1)} GiB'}\nÚltima conexão: ${device.lastSeen?.toLocal().toString() ?? 'não disponível'}\n\nCertificado SHA-256:\n${device.fingerprint}',
+          tr(
+            'Estado: ${device.status}\nIP: ${device.host}:${device.port}\nSistema: ${device.info['os'] ?? 'não disponível'}\nVersão: ${device.info['version'] ?? 'não disponível'}\nBateria: ${device.info['battery'] == null ? 'não disponível' : '${device.info['battery']}%'}\nEspaço livre: ${device.info['freeBytes'] == null ? 'não disponível' : '${(device.info['freeBytes'] / 1073741824).toStringAsFixed(1)} GiB'}\nÚltima conexão: ${device.lastSeen?.toLocal().toString() ?? 'não disponível'}\n\nCertificado SHA-256:\n${device.fingerprint}',
+            "Status: ${statusLabel(device.status)}\nIP: ${device.host}:${device.port}\nSystem: ${device.info['os'] ?? 'not available'}\nVersion: ${device.info['version'] ?? 'not available'}\nBattery: ${device.info['battery'] == null ? 'not available' : '${device.info['battery']}%'}\nFree space: ${device.info['freeBytes'] == null ? 'not available' : '${(device.info['freeBytes'] / 1073741824).toStringAsFixed(1)} GiB'}\nLast connection: ${device.lastSeen?.toLocal().toString() ?? 'not available'}\n\nSHA-256 certificate:\n${device.fingerprint}",
+          ),
         ),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(c),
-          child: const Text('Fechar'),
+          child: Text(tr('Fechar', "Close")),
         ),
       ],
     ),
@@ -1494,7 +1754,9 @@ class _ScannerPageState extends State<ScannerPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Ler convite OmniLink')),
+    appBar: AppBar(
+      title: Text(tr('Ler convite OmniLink', "Scan OmniLink invitation")),
+    ),
     body: MobileScanner(
       controller: controller,
       onDetect: (capture) {

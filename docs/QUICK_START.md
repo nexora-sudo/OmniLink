@@ -17,7 +17,7 @@ On Windows, if a firewall prompt appears, allow the application on your trusted 
 
 ## 3. Pair
 
-The app currently uses Brazilian Portuguese labels.
+The app defaults to English when no preference is saved. Choose English or Português (Brasil) in Settings → Language. The steps below include Portuguese labels for reference.
 
 1. On Windows, select **Criar convite** (Create invitation).
 2. On Android, select **Ler QR Code** (Scan QR code) and scan the invitation. Camera access is required for scanning.

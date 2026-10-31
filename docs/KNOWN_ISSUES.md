@@ -7,7 +7,7 @@ This page distinguishes implemented limitations from behavior that has not yet b
 | Area | What testers should expect |
 | --- | --- |
 | Android background operation | Keep the app in the foreground. There is no persistent background transfer service or guarantee of completion while the screen sleeps. |
-| Language | The application interface is in Brazilian Portuguese. The README and tester guides are in English. |
+| Language | English and Brazilian Portuguese are available in Settings → Language. Native OS dialogs and third-party diagnostic details may follow the system language. |
 | Network | Both devices must be reachable on the same local network. This version supports private/link-local IPv4, not IPv6-only networks or CGNAT addresses in 100.64/10. |
 | Discovery | Routers may block mDNS or isolate clients. Use manual connection details if discovery fails; isolation can also prevent manual connections. |
 | File size | Maximum 4 GiB per file. |
@@ -28,7 +28,7 @@ This page distinguishes implemented limitations from behavior that has not yet b
 
 - Windows release and Android debug builds completed successfully.
 - APK signature verification passed.
-- 23 automated tests passed; static analysis reported no issues.
+- 27 automated tests passed; static analysis reported no issues.
 - The Windows app was opened and its Devices, Files, and Text screens were captured. The screenshots show an unpaired session, not a completed transfer.
 
 See [VALIDATION.md](../VALIDATION.md) and [TESTING.md](TESTING.md) for the original build checks and manual test matrix.

@@ -1,27 +1,31 @@
-00:00 +0: loading C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/glass_test.dart
-00:00 +0: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/glass_test.dart: painel de vidro dark respeita largura de celular e texto ampliado
-00:00 +1: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/glass_test.dart: painel de vidro dark respeita largura de celular e texto ampliado
-00:01 +2: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/glass_test.dart: painel de vidro light respeita largura de celular e texto ampliado
-00:02 +3: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: (setUpAll)
-00:03 +3: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: pareamento TLS estabelece credencial nos dois lados e convite é de uso único
-00:03 +4: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: pareamento TLS estabelece credencial nos dois lados e convite é de uso único
-00:03 +5: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: pareamento TLS estabelece credencial nos dois lados e convite é de uso único
-00:03 +6: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: recusa de pareamento não autoriza dispositivo
-00:03 +7: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: segredo errado é rejeitado
-00:03 +8: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: convite expirado é rejeitado
-00:03 +9: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: certificado diferente é rejeitado antes do pareamento
-00:03 +10: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: token inválido e dispositivo removido não acessam endpoints
-00:03 +11: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: arquivo real multibloco é recebido com bytes e SHA-256 idênticos
-00:05 +12: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: arquivo vazio é transferido e validado
-00:05 +13: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: recusa de recebimento não grava arquivo parcial
-00:05 +14: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: SHA-256 divergente impede publicação e zera parcial corrompido
-00:05 +15: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: retomada usa offset persistido após reiniciar receptor
-00:06 +16: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: cancelamento no receptor impede próximos blocos e permite excluir parcial
-00:06 +17: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: reconexão autentica novamente após falha de rede
-00:11 +18: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: offset incorreto, caminhos perigosos e tamanho excessivo são rejeitados
-00:11 +19: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: textos trafegam por TLS e desativar o recurso bloqueia recebimento
-00:11 +20: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: revogação persistida não é sobrescrita por heartbeat concorrente
-00:11 +21: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: cancelamento pelo remetente encerra envio ativo sem publicar arquivo
-00:11 +22: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: nomes Windows reservados e endereços externos não são aceitos
-00:11 +23: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: (tearDownAll)
-00:11 +23: All tests passed!
+00:00 +0: loading C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/app_language_test.dart
+00:00 +0: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/app_language_test.dart: English default and Portuguese selection apply immediately
+00:00 +1: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/app_language_test.dart: language preference survives closing and reopening SQLite
+00:00 +2: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/app_language_test.dart: all stored statuses have English labels without altering values
+00:00 +3: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/app_language_test.dart: confirmation and save errors follow language and keep details
+00:00 +4: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/glass_test.dart: painel de vidro dark respeita largura de celular e texto ampliado
+00:01 +5: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/persistence_test.dart: SQLite persiste transferências, ajustes e histórico e recupera estado interrompido
+00:01 +6: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/persistence_test.dart: SQLite persiste transferências, ajustes e histórico e recupera estado interrompido
+00:02 +7: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: (setUpAll)
+00:03 +7: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: pareamento TLS estabelece credencial nos dois lados e convite é de uso único
+00:03 +8: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: pareamento TLS estabelece credencial nos dois lados e convite é de uso único
+00:03 +9: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: pareamento TLS estabelece credencial nos dois lados e convite é de uso único
+00:03 +10: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: recusa de pareamento não autoriza dispositivo
+00:03 +11: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: segredo errado é rejeitado
+00:03 +12: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: convite expirado é rejeitado
+00:03 +13: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: certificado diferente é rejeitado antes do pareamento
+00:03 +14: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: token inválido e dispositivo removido não acessam endpoints
+00:03 +15: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: arquivo real multibloco é recebido com bytes e SHA-256 idênticos
+00:04 +16: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: arquivo vazio é transferido e validado
+00:04 +17: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: recusa de recebimento não grava arquivo parcial
+00:05 +18: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: SHA-256 divergente impede publicação e zera parcial corrompido
+00:05 +19: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: retomada usa offset persistido após reiniciar receptor
+00:05 +20: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: cancelamento no receptor impede próximos blocos e permite excluir parcial
+00:05 +21: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: reconexão autentica novamente após falha de rede
+00:10 +22: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: offset incorreto, caminhos perigosos e tamanho excessivo são rejeitados
+00:10 +23: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: textos trafegam por TLS e desativar o recurso bloqueia recebimento
+00:10 +24: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: revogação persistida não é sobrescrita por heartbeat concorrente
+00:10 +25: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: cancelamento pelo remetente encerra envio ativo sem publicar arquivo
+00:10 +26: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: nomes Windows reservados e endereços externos não são aceitos
+00:10 +27: C:/Users/bruno/Documents/Codex/2026-10-30/files-pasted-by-the-user-projeto/outputs/omnilink/test/protocol_test.dart: (tearDownAll)
+00:10 +27: All tests passed!

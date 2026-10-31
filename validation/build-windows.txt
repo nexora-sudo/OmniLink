@@ -1,2 +1,2 @@
-Building Windows application...                                   248,4s
+Building Windows application...                                    82,8s
 √ Built build\windows\x64\runner\Release\omnilink.exe

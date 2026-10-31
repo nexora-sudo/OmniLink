@@ -1,3 +1,12 @@
+# 0.1.1 — English and Portuguese
+
+- Added English UI and Settings → Language selector.
+- Language changes apply immediately and persist across restarts.
+- Localized navigation, pairing, transfers, text sharing, settings, save actions, status labels and application diagnostics.
+- English is the default when no preference has been saved.
+- Added localization and persistence tests; 27 tests passed.
+- See docs/UPDATE_LOG_0.1.1.md for details.
+
 # Changelog
 
 ## 0.1.0 Alpha — 2026-10-30

@@ -1,2 +1,2 @@
 Analyzing omnilink...                                           
-No issues found! (ran in 26.6s)
+No issues found! (ran in 22.2s)
