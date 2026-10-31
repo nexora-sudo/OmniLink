@@ -4,6 +4,44 @@ An open-source Flutter application for sharing files and text between Windows an
 
 **Delivery status:** The Android debug APK and Windows release executable have been built and verified. The APK signature has been validated. Integration between physical devices and visual performance still require validation. See [VALIDATION.md](VALIDATION.md) for exact results and limitations.
 
+## Download and try it
+
+**[Download the latest release](https://github.com/nexora-sudo/OmniLink/releases/latest)** · [Quick start](docs/QUICK_START.md) · [Known issues and limitations](docs/KNOWN_ISSUES.md) · [Report a bug](https://github.com/nexora-sudo/OmniLink/issues/new?template=bug_report.md)
+
+| Platform | Download | Install |
+| --- | --- | --- |
+| Android 7+ | [Android APK](https://github.com/nexora-sudo/OmniLink/releases/download/v0.1.0-alpha-build2/OmniLink-0.1.0-alpha-build2-android.apk) | Open the APK on your phone. This Alpha uses a development signature. |
+| Windows x64 | [Windows ZIP](https://github.com/nexora-sudo/OmniLink/releases/download/v0.1.0-alpha-build2/OmniLink-0.1.0-alpha-build2-windows-x64.zip) | Extract the entire ZIP and open `omnilink.exe`. Keep the DLLs and `data` folder together. |
+
+Connect both devices to the same Wi-Fi/network, keep both apps open, create an invitation on one device, scan its QR code on Android, and confirm pairing. Select the paired device, send a small file, and accept it on the receiver. See the [quick start](docs/QUICK_START.md) for button names, saving files, and troubleshooting.
+
+### Real screenshots
+
+Captured from the running Windows Build 2 application. The interface is currently in Brazilian Portuguese. These screens show an unpaired session; they do not demonstrate a completed transfer. The computer name, local IP address, and local destination path have been obscured.
+
+**Devices**
+
+![OmniLink running on Windows: device discovery and pairing](docs/media/windows-devices.png)
+
+<details>
+<summary>Files and text screens</summary>
+
+**Files**
+
+![OmniLink running on Windows: file transfer screen before pairing](docs/media/windows-files.png)
+
+**Text**
+
+![OmniLink running on Windows: manual text sharing screen](docs/media/windows-text.png)
+
+</details>
+
+### 15-second interface tour
+
+[![Watch the Windows interface tour](docs/media/windows-devices.png)](https://github.com/nexora-sudo/OmniLink/releases/download/v0.1.0-alpha-build2/omnilink-windows-tour.mp4)
+
+**[Watch or download the short MP4](https://github.com/nexora-sudo/OmniLink/releases/download/v0.1.0-alpha-build2/omnilink-windows-tour.mp4).** This is a captioned slideshow of the real screenshots above, not a recording of a device-to-device transfer. Android screenshots and physical-device transfer validation are still pending.
+
 ## Features
 
 - mDNS discovery (`_omnilink._tcp`), invitation-based connections, QR code scanning with the Android camera, and manual IPv4/port/certificate/code entry.
@@ -153,7 +191,7 @@ Transport uses local HTTPS: HTTP framed over TCP/TLS, without an intermediary se
 - No actual FPS measurements have been collected. Achieving 60 FPS depends on the hardware and requires profiling.
 - Large files use streaming hashes and chunked transfers, but throughput and memory usage on midrange phones have not yet been measured.
 - Edge cases involving process termination between file finalization and persistence may require manual recovery (`docs/PROTOCOL.md`).
-- No screenshots of the running native application are available. No simulated image is presented as an application screenshot.
+- Real Windows screenshots and a short interface tour are available above. Android screenshots and physical-device transfer validation are still pending.
 
 ## Technical references
 
@@ -184,4 +222,3 @@ After a transfer completes, the **Files** page offers:
 Saving is manual and preserves the received copy. Android 10+ uses MediaStore. Android 7–9 requests `WRITE_EXTERNAL_STORAGE` only when saving, with the permission limited to those versions in the manifest. Errors are displayed, and partial export copies are removed. On modern Android versions, photos go to `Pictures/OmniLink`, videos to `Movies/OmniLink`, and other files to `Download/OmniLink`. The device's gallery may take a few moments to update the album.
 
 The application does not require permission to read the gallery: it only publishes files it has received. Support for displaying a particular format depends on the applications installed on the device.
-
