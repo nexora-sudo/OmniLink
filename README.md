@@ -1,46 +1,46 @@
 # OmniLink 0.1.0 Alpha
 
-Aplicativo open-source em Flutter para compartilhar arquivos e textos entre Windows e Android pela rede local. Interface Material 3 com transparência, desfoque, temas claro/escuro/automático e português brasileiro.
+An open-source Flutter application for sharing files and text between Windows and Android over a local network. Material 3 interface with transparency, blur, light/dark/system themes, and Brazilian Portuguese localization.
 
-**Estado da entrega:** APK debug Android e executável release Windows gerados e verificados. A assinatura do APK foi validada. A integração entre aparelhos físicos e o desempenho visual ainda precisam de validação. Consulte [VALIDATION.md](VALIDATION.md) para resultados e limites exatos.
+**Delivery status:** The Android debug APK and Windows release executable have been built and verified. The APK signature has been validated. Integration between physical devices and visual performance still require validation. See [VALIDATION.md](VALIDATION.md) for exact results and limitations.
 
-## Recursos
+## Features
 
-- Descoberta mDNS (`_omnilink._tcp`), conexão por convite, QR Code com câmera no Android e entrada manual de IPv4/porta/certificado/código.
-- Convites de cinco minutos e uso único, confirmação no receptor, TLS com certificado fixado, credenciais no armazenamento seguro e revogação de pares.
-- Heartbeat com estados conectado/conectando/desconectado e reconexão de pares conhecidos. Atualização de IP por mDNS.
-- Transferências de arquivos reais em blocos, seleção múltipla, drag-and-drop no Windows, progresso, MB/s, ETA estimada, cancelamento e retomada após interrupção/reinício.
-- SHA-256 integral antes de considerar um recebimento concluído. Nomes validados, limite de 4 GiB por arquivo e confirmação em todo recebimento.
-- Textos bidirecionais com cópia manual, histórico opcional e envio automático da área de transferência no Windows, desativado por padrão.
-- Nome/sistema/versão/IP e última conexão reais; bateria e espaço livre são exibidos somente quando o sistema informa.
-- Histórico de transferências e configurações em SQLite; opção de iniciar com Windows.
-- Pasta de destino no Windows. Android recebe na área privada e oferece “Salvar em…” via seletor SAF, além do compartilhamento com outros aplicativos.
+- mDNS discovery (`_omnilink._tcp`), invitation-based connections, QR code scanning with the Android camera, and manual IPv4/port/certificate/code entry.
+- Single-use invitations that expire after five minutes, confirmation on the receiving device, TLS certificate pinning, credentials in secure storage, and device unpairing.
+- Heartbeat with connected/connecting/disconnected states and reconnection to known devices. IP address updates through mDNS.
+- Chunked file transfers, multiple file selection, drag and drop on Windows, progress, MB/s, estimated time remaining, cancellation, and resuming after interruptions or restarts.
+- Full-file SHA-256 verification before marking a received file as complete. Validated filenames, a 4 GiB limit per file, and confirmation for every incoming transfer.
+- Bidirectional text sharing with manual copying, optional history, and automatic clipboard sending on Windows, disabled by default.
+- Actual device name, operating system, version, IP address, and last connection time. Battery level and free storage are displayed only when reported by the system.
+- Transfer history and settings stored in SQLite, with an option to launch at Windows startup.
+- Configurable destination folder on Windows. Android receives files in private app storage and offers gallery/Downloads saving, "Save as…" through the Storage Access Framework (SAF), and sharing to other applications.
 
-Não há conta, nuvem, analytics nem transporte externo. As dependências de desenvolvimento precisam de internet durante instalação/build; o uso entre aparelhos não precisa.
+No account, cloud service, analytics, or external transport. Development dependencies require internet access during installation and builds; sharing between devices does not.
 
-## Ambiente de desenvolvimento
+## Development environment
 
-Versão usada nesta entrega: **Flutter 3.47.9 stable / Dart 3.13.7**. Mantenha `pubspec.lock`. O resolvedor selecionou versões estáveis compatíveis; versões major mais novas não foram adotadas automaticamente.
+This delivery uses **Flutter 3.47.9 stable / Dart 3.13.7**. Keep `pubspec.lock`. The dependency resolver selected compatible stable versions; newer major versions were not adopted automatically.
 
 ### Windows
 
-1. Instale Flutter e adicione `flutter/bin` ao PATH.
-2. Instale Visual Studio com **Desktop development with C++**, MSVC, CMake, Windows SDK e a biblioteca ATL (exigida pelo armazenamento seguro).
-3. Habilite Modo de Desenvolvedor do Windows para os links simbólicos usados pelos plugins.
-4. Execute `flutter doctor -v` e corrija os requisitos de Windows.
+1. Install Flutter and add `flutter/bin` to `PATH`.
+2. Install Visual Studio with **Desktop development with C++**, MSVC, CMake, Windows SDK, and the ATL library, which is required by secure storage.
+3. Enable Windows Developer Mode for the symbolic links used by plugins.
+4. Run `flutter doctor -v` and resolve the Windows requirements.
 
 ### Android
 
-1. Instale Android Studio, JDK 17 e Android SDK com command-line tools.
-2. Instale a plataforma SDK 36 e as versões de build-tools/NDK solicitadas pelo Flutter/Gradle.
-3. Execute `flutter doctor --android-licenses` e revise as licenças.
-4. Ative depuração USB no celular, autorize o computador e confira `flutter devices`.
+1. Install Android Studio, JDK 17, and Android SDK command-line tools.
+2. Install SDK platform 36 and the build-tools/NDK versions requested by Flutter/Gradle.
+3. Run `flutter doctor --android-licenses` and review the licenses.
+4. Enable USB debugging on your phone, authorize the computer, and check `flutter devices`.
 
-O projeto usa target SDK 36. Antes de elevar para API 37, implemente a permissão de rede local do Android 17. Não solicita acesso amplo ao armazenamento, localização ou execução em segundo plano. Câmera é necessária somente para ler QR.
+The project targets SDK 36. Before upgrading to API 37, implement Android 17's local network permission. The app does not request broad storage access, location access, or background execution. The camera is needed only for QR code scanning. Android 7–9 requests legacy storage write permission when saving to public folders; see the Build 2 section below.
 
-## Rodar
+## Running
 
-Abra um terminal **na pasta que contém `pubspec.yaml`**:
+Open a terminal **in the folder containing `pubspec.yaml`**:
 
 ```sh
 flutter pub get
@@ -49,129 +49,138 @@ flutter test
 flutter run -d windows
 ```
 
-Em outro terminal, para o Android conectado:
+In another terminal, run the app on the connected Android device:
 
 ```sh
 flutter devices
-flutter run -d ID_DO_ANDROID
+flutter run -d ANDROID_DEVICE_ID
 ```
 
-Nesta máquina, o SDK preparado está em `../../work/flutter/bin`, relativo à pasta do projeto. Exemplo PowerShell para executar os testes sem alterar o PATH:
+In the original delivery workspace, the prepared SDK is located at `../../work/flutter/bin`, relative to the project folder. PowerShell example for running tests without changing `PATH`:
 
 ```powershell
 $env:PUB_CACHE = (Resolve-Path ../../work/pub-cache).Path
 & ../../work/flutter/bin/flutter.bat test --no-pub
 ```
 
-Esse caminho é específico desta entrega; não faz parte do ZIP distribuível.
+This path is specific to the original delivery workspace and is not included in the distribution ZIP. For a GitHub checkout, use your own Flutter installation.
 
-## Primeiro pareamento
+## First pairing
 
-1. Conecte os dois aparelhos à mesma rede e mantenha o OmniLink aberto.
-2. No Windows, permita o aplicativo no Firewall apenas para redes privadas. A porta TCP padrão é 45832; mDNS usa UDP 5353. Nenhuma regra é alterada automaticamente.
-3. Em um aparelho, clique **Criar convite**. Se houver várias interfaces, selecione o IPv4 da mesma rede do outro aparelho.
-4. No Android, use **Ler QR Code**; ou no outro aparelho use **Conectar / IP manual** para colar o convite. A seção “Dados para conexão manual” apresenta IPv4, porta, SHA-256 e código secreto.
-5. Confirme o nome/endereço no aparelho que criou o convite. Fechar a janela revoga o convite.
-6. Selecione o dispositivo pareado. Em **Arquivos**, escolha arquivos ou arraste-os; confirme a recepção no destino.
+The current application interface is in Brazilian Portuguese; the English labels below describe the corresponding actions.
 
-A impressão digital/código devem vir diretamente do convite do outro aparelho. O anúncio mDNS não autentica nada. Evite enviar convites por canais públicos. A permissão de firewall pode ser necessária nos dois sentidos para comunicação bidirecional.
+1. Connect both devices to the same network and keep OmniLink open.
+2. On Windows, allow the application through the firewall for private networks only. The default TCP port is `45832`; mDNS uses UDP `5353`. No firewall rules are changed automatically.
+3. On one device, click **Create invitation** (Criar convite). If multiple network interfaces are available, select the IPv4 address on the same network as the other device.
+4. On Android, use **Scan QR code** (Ler QR Code). Alternatively, use **Connect / Manual IP** (Conectar / IP manual) on the other device to paste the invitation. The **Manual connection details** section provides the IPv4 address, port, SHA-256 fingerprint, and secret code.
+5. Confirm the name/address on the device that created the invitation. Closing the dialog revokes the invitation.
+6. Select the paired device. Under **Files** (Arquivos), choose files or drag them into the app, then confirm receipt on the destination device.
 
-## Arquivos e retomada
+The fingerprint and code must come directly from the other device's invitation. The mDNS announcement does not authenticate devices. Avoid sharing invitations through public channels. Firewall permission may be required in both directions for bidirectional communication.
 
-Cada arquivo é recebido inicialmente como `.ID.omnipart`. Somente após validar SHA-256 é movido para `OmniLink-ID/nome-original` dentro da pasta escolhida. Não há sobrescrita de arquivos existentes.
+## Files and resuming transfers
 
-Se a rede cair, o histórico mostra o erro e **Retomar** no remetente. O receptor reconfirma e informa quantos bytes persistiu. Depois de reiniciar, a origem deve continuar acessível no mesmo caminho; caso o cache do seletor Android tenha sido limpo, selecione o arquivo original novamente. Arquivos idênticos para o mesmo par são idempotentes, sem cópias duplicadas.
+Each file is initially received as `.ID.omnipart`. Only after SHA-256 verification is it moved to `OmniLink-ID/original-filename` inside the selected folder. Existing files are not overwritten.
 
-**Cancelar** interrompe o envio e preserva o parcial. **Excluir parcial** no receptor remove os bytes. O histórico é preservado. Uma desconexão pode impedir a confirmação remota do cancelamento; a UI informa essa situação.
+If the network disconnects, the history displays the error and a **Resume** action on the sender. The receiver confirms again and reports how many bytes it has persisted. After a restart, the source file must remain accessible at the same path. If the Android file picker cache has been cleared, select the original file again. Identical files sent to the same paired device are handled idempotently, without duplicate copies.
 
-No Android, a pasta privada evita permissões amplas e URLs SAF inválidas para `dart:io`. **Salvar em…** permite escolher onde exportar o arquivo concluído, sem carregar tudo na RAM. Esta Alpha não configura uma árvore SAF como destino automático permanente. Desinstalar o app remove seus arquivos privados; exporte os que deseja manter.
+**Cancel** stops the transfer and preserves the partial file. **Delete partial file** on the receiver removes its bytes. The history is retained. A disconnection may prevent remote confirmation of cancellation; the interface reports this situation.
 
-## Área de transferência
+On Android, private app storage avoids broad permissions and SAF URLs that cannot be used with `dart:io`. **Save as…** lets you choose where to export a completed file without loading it entirely into RAM. This Alpha does not support configuring a SAF directory tree as a permanent automatic destination. Uninstalling the app removes its private files; export any files you want to keep.
 
-Textos recebidos não sobrescrevem o clipboard automaticamente. Use **Copiar**. No Android, use **Colar** com o aplicativo em primeiro plano, respeitando as restrições do sistema. No Windows, o envio automático é opcional e funciona enquanto o processo está aberto e um destino está selecionado. Qualquer texto copiado, inclusive senhas, pode ser enviado quando essa opção está ligada.
+## Clipboard
 
-O histórico de textos fica desligado por padrão. Quando habilitado, guarda até 100 registros no SQLite local, sem criptografia adicional. É possível apagá-lo nos ajustes.
+Received text does not automatically overwrite the clipboard. Use **Copy**. On Android, use **Paste** while the application is in the foreground, respecting system restrictions. On Windows, automatic sending is optional and works while the process is running and a destination is selected. Any copied text, including passwords, may be sent while this option is enabled.
+
+Text history is disabled by default. When enabled, it stores up to 100 entries in the local SQLite database without additional encryption. It can be cleared in settings.
 
 ## Builds
 
 ```sh
-# Windows (precisa de Visual Studio / C++ / Windows SDK)
+# Windows: requires Visual Studio / C++ / Windows SDK
 flutter build windows --release
 
-# APK instalável para testes Alpha, assinado com chave de desenvolvimento
+# Installable APK for Alpha testing, signed with a development key
 flutter build apk --debug
 ```
 
-Arquivos esperados, **somente após build bem-sucedido**:
+Expected files, **available only after a successful build**:
 
-- `build/windows/x64/runner/Release/omnilink.exe`: distribua toda a pasta Release, incluindo DLLs e data; não apenas o EXE.
-- `build/app/outputs/flutter-apk/app-debug.apk`: instale com `adb install -r CAMINHO_DO_APK` ou pelo instalador Android.
+- `build/windows/x64/runner/Release/omnilink.exe`: distribute the entire `Release` folder, including DLLs and `data`, rather than the executable alone.
+- `build/app/outputs/flutter-apk/app-debug.apk`: install using `adb install -r APK_PATH` or the Android package installer.
 
-Para automatizar validação e conferir existência/hash do artefato: `./scripts/build.ps1 -Target windows` ou `-Target android`.
+To automate validation and check the artifact's existence and hash:
 
-O arquivo `packaging/windows/omnilink.iss` permite gerar um instalador com Inno Setup 6 após o build Windows. Não foi executado nesta máquina. A configuração release Android não usa silenciosamente uma chave debug: configure uma keystore e signingConfig antes de distribuir release. Builds e instaladores públicos também devem ser assinados e testados.
+```powershell
+./scripts/build.ps1 -Target windows
+./scripts/build.ps1 -Target android
+```
+
+The `packaging/windows/omnilink.iss` file can generate an installer with Inno Setup 6 after the Windows build. This has not been run on this machine. The Android release configuration does not silently use a debug key: configure a keystore and `signingConfig` before distributing a release. Public builds and installers should also be signed and tested.
 
 ## GitHub
 
-A pasta está preparada para publicação, mas nenhum repositório remoto foi criado nem conteúdo publicado. Inclui licença MIT, changelog, guia de contribuição, ignore, protocolo, segurança, plano de validação e dois workflows:
+The source is published in [nexora-sudo/OmniLink](https://github.com/nexora-sudo/OmniLink). The repository is currently private. The [Build 2 prerelease](https://github.com/nexora-sudo/OmniLink/releases/tag/v0.1.0-alpha-build2) includes the Android APK, Windows ZIP, source archive, installation instructions, and SHA-256 checksums.
 
-- `ci.yml`: formatação, análise e testes no Windows, em push/PR.
-- `build.yml`: acionamento manual para APK debug e pasta release Windows, publicados apenas como artifacts da execução.
+The repository includes an MIT license, changelog, contribution guide, ignore rules, protocol documentation, security documentation, a validation plan, and two workflows:
 
-Os workflows estão preparados, **não executados no GitHub nesta entrega**. Use a raiz desta pasta como raiz do repositório. Confira o conteúdo antes do primeiro push; não inclua builds, bancos, credenciais nem caches.
+- `ci.yml`: formatting, analysis, and tests on Windows for pushes and pull requests.
+- `build.yml`: manually triggered builds of the debug APK and Windows release folder, uploaded as workflow artifacts.
 
-## Arquitetura
+Check the [Actions page](https://github.com/nexora-sudo/OmniLink/actions) for current workflow results. The published Build 2 binaries were built and verified locally. Do not commit builds, databases, credentials, or caches.
+
+## Architecture
 
 ```text
 lib/
-  communication/  identidade TLS, pareamento, autenticação, transporte e transferências
-  models/         pares, convites, transferências e validação
-  persistence/    contrato de repositório, SQLite e armazenamento seguro
-  services/       descoberta mDNS e recursos nativos
-  ui/             telas e tema de vidro
-android/          host Kotlin, armazenamento e exportação SAF
-windows/          host C++, espaço livre e integração com plugins
+  communication/  TLS identity, pairing, authentication, transport, and transfers
+  models/         paired devices, invitations, transfers, and validation
+  persistence/    repository interface, SQLite, and secure storage
+  services/       mDNS discovery and native features
+  ui/             screens and glass theme
+android/          Kotlin host, storage, and SAF export
+windows/          C++ host, free storage, and plugin integration
 ```
 
-O transporte é HTTPS local, ou seja, HTTP enquadrado sobre TCP/TLS, sem servidor intermediário. Veja [protocolo](docs/PROTOCOL.md), [segurança](docs/SECURITY.md) e [plano de testes](docs/TESTING.md).
+Transport uses local HTTPS: HTTP framed over TCP/TLS, without an intermediary server. See the [protocol](docs/PROTOCOL.md), [security documentation](docs/SECURITY.md), and [test plan](docs/TESTING.md).
 
-## Limitações conhecidas
+## Known limitations
 
-- Os builds nativos foram concluídos. Câmera, mDNS entre aparelhos, secure storage em hardware, share sheet e autorun ainda precisam de testes integrados em aparelhos físicos.
-- Uso em primeiro plano no Android. Não há serviço permanente ou garantia de transferência com tela suspensa.
-- IPv4 privado/link-local; redes somente IPv6 e CGNAT 100.64/10 não são aceitas nesta versão.
-- Sem rotação automática de identidade e sem auditoria independente de segurança.
-- Sem métricas reais de FPS coletadas; 60 FPS depende de hardware e precisa de perfil.
-- Arquivos grandes usam hash em fluxo e envio em blocos, mas throughput e uso de memória em celulares intermediários ainda não foram medidos.
-- Casos extremos de queda do processo entre finalização do arquivo e persistência podem exigir recuperação manual (docs/PROTOCOL.md).
-- Sem capturas de tela de execução nativa disponíveis. Nenhuma imagem simulada é apresentada como screenshot do aplicativo.
+- Native builds have completed. Camera access, mDNS between devices, secure storage on physical hardware, the share sheet, and startup integration still require testing on physical devices.
+- Android usage is limited to the foreground. There is no persistent service or guarantee that transfers will continue while the screen is asleep.
+- Private/link-local IPv4 only. IPv6-only networks and the CGNAT range `100.64/10` are not supported in this version.
+- No automatic identity rotation or independent security audit.
+- No actual FPS measurements have been collected. Achieving 60 FPS depends on the hardware and requires profiling.
+- Large files use streaming hashes and chunked transfers, but throughput and memory usage on midrange phones have not yet been measured.
+- Edge cases involving process termination between file finalization and persistence may require manual recovery (`docs/PROTOCOL.md`).
+- No screenshots of the running native application are available. No simulated image is presented as an application screenshot.
 
-## Referências técnicas
+## Technical references
 
-- [Flutter: instalação](https://docs.flutter.dev/install)
-- [Bonsoir: mDNS e endereços resolvidos](https://pub.dev/packages/bonsoir)
-- [SQLite para Dart: native assets](https://pub.dev/packages/sqlite3)
-- [Armazenamento seguro](https://pub.dev/packages/flutter_secure_storage)
-- [Android: permissões de rede local](https://developer.android.com/privacy-and-security/local-network-permission)
+- [Flutter: installation](https://docs.flutter.dev/install)
+- [Bonsoir: mDNS and resolved addresses](https://pub.dev/packages/bonsoir)
+- [SQLite for Dart: native assets](https://pub.dev/packages/sqlite3)
+- [Secure storage](https://pub.dev/packages/flutter_secure_storage)
+- [Android: local network permissions](https://developer.android.com/privacy-and-security/local-network-permission)
 
-## Licença
+## License
 
-MIT — veja [LICENSE](LICENSE). Dependências mantêm suas próprias licenças, acessíveis em Configurações → Licenças de código aberto.
+MIT — see [LICENSE](LICENSE). Dependencies retain their own licenses, accessible under **Settings → Open-source licenses**.
 
-## Binários para teste (verificados em 31/10/2026)
+## Test binaries — verified on October 31, 2026
 
-O APK debug usa assinatura de desenvolvimento, minSdk 24 e targetSdk 36, com ARM64, ARM de 32 bits e x86_64. O pacote Windows é x64 e deve ser extraído integralmente antes de abrir omnilink.exe. Não há instalador Windows gerado.
+The debug APK uses a development signature, with `minSdk 24` and `targetSdk 36`, supporting ARM64, 32-bit ARM, and x86_64. The Windows package is x64 and must be fully extracted before opening `omnilink.exe`. No Windows installer has been generated.
 
-O plugin desktop_drop 0.6.1 foi incluído em packages/desktop_drop com licença original e registro nativo Android removido. Arrastar arquivos é utilizado apenas no Windows; Android utiliza o seletor do sistema. Veja packages/desktop_drop/OMNILINK_PATCH.md.
+The `desktop_drop` 0.6.1 plugin is included in `packages/desktop_drop` with its original license and Android native registration removed. Drag and drop is used only on Windows; Android uses the system file picker. See [packages/desktop_drop/OMNILINK_PATCH.md](packages/desktop_drop/OMNILINK_PATCH.md).
 
+## Build 2 — saving received files
 
-## Build 2 — salvar arquivos recebidos
+After a transfer completes, the **Files** page offers:
 
-Depois de uma transferência concluída, a página Arquivos oferece:
-- Android: **Salvar na galeria** para fotos/vídeos (álbum OmniLink) e **Salvar em Downloads** para qualquer arquivo.
-- Windows: **Salvar em Downloads**, dentro de Downloads/OmniLink. Essa pasta continua sendo o destino padrão; se o arquivo já está ali, a ação confirma o local sem criar outra cópia.
-- Android: **Salvar em…** permanece disponível para escolher manualmente outra pasta.
+- **Android:** **Save to gallery** for photos/videos in the OmniLink album, and **Save to Downloads** for any file.
+- **Windows:** **Save to Downloads**, inside `Downloads/OmniLink`. This remains the default destination; if the file is already there, the action confirms its location without creating another copy.
+- **Android:** **Save as…** remains available for manually choosing another folder.
 
-O salvamento é manual e preserva a cópia recebida. Android 10+ usa MediaStore; Android 7–9 solicita WRITE_EXTERNAL_STORAGE somente ao salvar, limitada a essas versões no manifesto. Falhas são exibidas e cópias parciais da exportação são removidas. No Android moderno, fotos vão para Pictures/OmniLink, vídeos para Movies/OmniLink e outros arquivos para Download/OmniLink. A galeria do aparelho pode levar alguns instantes para atualizar o álbum.
+Saving is manual and preserves the received copy. Android 10+ uses MediaStore. Android 7–9 requests `WRITE_EXTERNAL_STORAGE` only when saving, with the permission limited to those versions in the manifest. Errors are displayed, and partial export copies are removed. On modern Android versions, photos go to `Pictures/OmniLink`, videos to `Movies/OmniLink`, and other files to `Download/OmniLink`. The device's gallery may take a few moments to update the album.
 
-O aplicativo não depende de permissões para ler a galeria: ele apenas publica arquivos que recebeu. A apresentação de um formato específico depende dos aplicativos instalados no aparelho.
+The application does not require permission to read the gallery: it only publishes files it has received. Support for displaying a particular format depends on the applications installed on the device.
