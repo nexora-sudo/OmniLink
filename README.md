@@ -120,7 +120,7 @@ The `packaging/windows/omnilink.iss` file can generate an installer with Inno Se
 
 ## GitHub
 
-The source is published in [nexora-sudo/OmniLink](https://github.com/nexora-sudo/OmniLink). The repository is currently private. The [Build 2 prerelease](https://github.com/nexora-sudo/OmniLink/releases/tag/v0.1.0-alpha-build2) includes the Android APK, Windows ZIP, source archive, installation instructions, and SHA-256 checksums.
+The source is published in [nexora-sudo/OmniLink](https://github.com/nexora-sudo/OmniLink). The repository is public, so anyone can download and test the application. The [latest Build 2 release](https://github.com/nexora-sudo/OmniLink/releases/tag/v0.1.0-alpha-build2) includes the Android APK, Windows ZIP, source archive, installation instructions, and SHA-256 checksums.
 
 The repository includes an MIT license, changelog, contribution guide, ignore rules, protocol documentation, security documentation, a validation plan, and two workflows:
 
@@ -184,3 +184,4 @@ After a transfer completes, the **Files** page offers:
 Saving is manual and preserves the received copy. Android 10+ uses MediaStore. Android 7–9 requests `WRITE_EXTERNAL_STORAGE` only when saving, with the permission limited to those versions in the manifest. Errors are displayed, and partial export copies are removed. On modern Android versions, photos go to `Pictures/OmniLink`, videos to `Movies/OmniLink`, and other files to `Download/OmniLink`. The device's gallery may take a few moments to update the album.
 
 The application does not require permission to read the gallery: it only publishes files it has received. Support for displaying a particular format depends on the applications installed on the device.
+
